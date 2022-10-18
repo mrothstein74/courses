@@ -7,6 +7,14 @@ import (
 	"github.com/mrothstein74/lenslocked/views"
 )
 
+type Static struct {
+	Template views.Template
+}
+
+func (static Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	static.Template.Execute(w, nil)
+}
+
 func StaticHandler(tpl views.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl.Execute(w, nil)
@@ -27,12 +35,12 @@ func FAQ(tpl views.Template) http.HandlerFunc {
 			Answer:   "We have support staff answering emails 24/7, though response times may be a bit slower on weekends.",
 		},
 		{
-			Question: "How can I conttact support?",
+			Question: "How do I contact support?",
 			Answer:   `Email us - <a href="mailto:support@lenslocked.com">support@lenslocked.com</a>`,
 		},
 		{
-			Question: "Where is your office located?",
-			Answer:   "Phoenixville, PA",
+			Question: "Where is your office?",
+			Answer:   "Our entire team is remote!",
 		},
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
