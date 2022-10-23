@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
 
 	_ "github.com/hellofresh/health-go/v4/checks/postgres"
 	"gorm.io/driver/postgres"
@@ -44,28 +41,9 @@ func main() {
 	//db.Migrator().DropTable(&User{})
 	db.AutoMigrate(&User{})
 
-	name, email, color := getInfo()
-	u := User{
-		Name:  name,
-		Email: email,
-		Color: color,
-	}
-	if err = db.Create(&u).Error; err != nil {
-		panic(err)
-	}
-	fmt.Printf("%+v\n", u)
-}
+	var users []User
+	db.Find(&users)
+	fmt.Println(len(users))
+	fmt.Println(users)
 
-func getInfo() (name, email, color string) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("What is your name?")
-	name, _ = reader.ReadString('\n')
-	fmt.Println("What is your email address?")
-	email, _ = reader.ReadString('\n')
-	fmt.Println("What is your favorite color?")
-	color, _ = reader.ReadString('\n')
-	name = strings.TrimSpace(name)
-	email = strings.TrimSpace(email)
-	color = strings.TrimSpace(color)
-	return name, email, color
 }
