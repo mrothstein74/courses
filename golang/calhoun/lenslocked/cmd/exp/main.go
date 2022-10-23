@@ -20,9 +20,17 @@ const (
 
 type User struct {
 	gorm.Model
-	Name  string
-	Email string `gorm:"not null;uniqueIndex"`
-	Color string
+	Name   string
+	Email  string `gorm:"not null;uniqueIndex"`
+	Color  string
+	Orders []Order
+}
+
+type Order struct {
+	gorm.Model
+	UserID      uint
+	Amount      int
+	Description string
 }
 
 func main() {
@@ -39,11 +47,26 @@ func main() {
 	}
 
 	//db.Migrator().DropTable(&User{})
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{}, &Order{})
 
-	var users []User
-	db.Find(&users)
-	fmt.Println(len(users))
-	fmt.Println(users)
+	var u User
+	if err := db.Preload("Orders").First(&u).Error; err != nil {
+		panic(err)
+	}
+	//createOrder(db, u, 1001, "fake description #1")
+	//createOrder(db, u, 9999, "fake description #2")
+	//createOrder(db, u, 100, "fake description #3")
+
+}
+
+func createOrder(db *gorm.DB, user User, amount int, desc string) {
+	err := db.Create(&Order{
+		UserID:      user.ID,
+		Amount:      amount,
+		Description: desc,
+	}).Error
+	if err != nil {
+		panic(err)
+	}
 
 }
